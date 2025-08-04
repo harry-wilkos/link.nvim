@@ -1,0 +1,9 @@
+local M = {}
+
+function M.setup(opts)
+    require("mason").setup({})
+    require("mason-lspconfig").setup({})
+    vim.api.nvim_create_autocmd("BufReadPost", {callback = function() require("link.start")(opts) end})
+end
+
+return M
