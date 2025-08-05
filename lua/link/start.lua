@@ -40,27 +40,27 @@ function link:lsp_setup()
 
     local lsps = append_unique(include, lspconfig.get_filetype_map()[self.file_type])
     local lsps_install = {}
-    local count = 0
+    local count = 1
     local mason_convert_map = lspconfig.get_mason_map()["lspconfig_to_package"]
 
     for _, lsp in ipairs(lsps) do
         if exclude[lsp] then
             goto continue
         end
-
         local mason_lsp = mason_convert_map[lsp]
         if not mason_lsp then
             goto continue
         end
 
         local spec = self.mason_registry.get_package(mason_lsp).spec
-
         if include[lsp] then
             lsps_install[#lsps_install + 1] = lsp
         elseif #(spec.langaues or {}) > 1 then
             goto continue
         elseif #spec.categories == 1 and spec.categories[1] == "LSP" then
             lsps_install[#lsps_install + 1] = lsp
+        else
+            goto continue
         end
 
         if count >= opts["limit"] then
@@ -79,7 +79,6 @@ function link:lsp_setup()
         table.insert(self.ensure_removed, mason_convert_map[lsp])
         ::continue::
     end
-
     require("mason-lspconfig").setup({
         automatic_enable = { exclude = self.ensure_removed },
         ensure_installed = lsps_install
