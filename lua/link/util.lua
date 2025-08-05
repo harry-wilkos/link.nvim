@@ -42,10 +42,18 @@ local function append_unique(list1, list2)
 end
 M.append_unique = append_unique
 
+local function list_to_set(list)
+  local set = {}
+  for _, v in ipairs(list or {}) do
+    set[v] = true
+  end
+  return set
+end
+M.list_to_set = list_to_set
 
 M.default_opts = {
+    clean = true,
     lsps = {limit = 1},
-    include = {}
 }
 
 

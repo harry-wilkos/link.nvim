@@ -1,45 +1,66 @@
 local util = require("link.util")
 local link = util.class()
 local append_unique = util.append_unique
+local list_to_set = util.list_to_set
 
 function link:init(opts)
     self.file_type = vim.bo.filetype
     self.opts = vim.tbl_deep_extend("keep", opts, util.default_opts)
+    self.mason_registry = require("mason-registry")
+    self.ensure_removed = {}
+    self.installed = {}
 end
 
-
-function link:lsp_setup()
-    local opts = self.opts["lsps"]
-    local include = opts["include"][self.file_type]
-    local lspconfig_funcs = require("mason-lspconfig.mappings")
-    local all_lsps = lspconfig_funcs.get_filetype_map()[self.file_type]
-    local lsps = append_unique(include, all_lsps)
-    if not lsps then
+function link:clean()
+    if not self.opts["clean"] then
         return
     end
+    local removed = false
+    for _, lsp in ipairs(self.ensure_removed) do
+        if self.mason_registry.has_package(lsp) then
+            local pkg = self.mason_registry.get_package(lsp)
+            if pkg:is_installed() then
+                pkg:uninstall()
+                removed = true
+            end
+        end
+    end
+    if removed then
+        pcall(vim.cmd, "LspRestart")
+    end
+end
 
-    local mason_convert_map = lspconfig_funcs.get_mason_map()["lspconfig_to_package"]
-    local mason_registry = require("mason-registry")
+function link:lsp_setup()
+    local lspconfig = require("mason-lspconfig.mappings")
+    local opts = self.opts["lsps"]
+    local file_opts = opts[self.file_type] or {}
+
+    local include = file_opts["include"] or {}
+    local exclude = list_to_set(file_opts["exclude"])
+
+    local lsps = append_unique(include, lspconfig.get_filetype_map()[self.file_type])
     local lsps_install = {}
+    local count = 0
+    local mason_convert_map = lspconfig.get_mason_map()["lspconfig_to_package"]
 
-    count = 1
     for _, lsp in ipairs(lsps) do
+        if exclude[lsp] then
+            goto continue
+        end
+
         local mason_lsp = mason_convert_map[lsp]
         if not mason_lsp then
             goto continue
         end
 
-        local spec = mason_registry.get_package(mason_lsp).spec
-        if include and count <= #include then
+        local spec = self.mason_registry.get_package(mason_lsp).spec
+
+        if include[lsp] then
             lsps_install[#lsps_install + 1] = lsp
-        else
-            if #spec.languages ~= 1 then
-                goto continue
-            end
-            local category = spec.categories
-            if #category == 1 and category[1] == "LSP" then
-                lsps_install[#lsps_install + 1] = lsp
-            end
+        elseif #(spec.langaues or {}) > 1 then
+            goto continue
+        elseif #spec.categories == 1 and spec.categories[1] == "LSP" then
+            lsps_install[#lsps_install + 1] = lsp
         end
 
         if count >= opts["limit"] then
@@ -50,14 +71,22 @@ function link:lsp_setup()
 
         ::continue::
     end
+
+    for _, lsp in ipairs(lsps) do
+        if list_to_set(lsps_install)[lsp] then
+            goto continue
+        end
+        table.insert(self.ensure_removed, mason_convert_map[lsp])
+        ::continue::
+    end
+
     require("mason-lspconfig").setup({
-        automatic_enable = lsps_install,
+        automatic_enable = { exclude = self.ensure_removed },
         ensure_installed = lsps_install
     })
-
-
+    return self
 end
 
 return function(opts)
-    link(opts):lsp_setup()
+    return link(opts)
 end
