@@ -5,12 +5,13 @@ local link_instances = {}
 function M.setup(opts)
     require("mason").setup({})
     require("mason-lspconfig").setup({})
-
+    require("conform").setup({})
     -- BufReadPost: create & stash instance
     vim.api.nvim_create_autocmd("BufReadPost", {
         callback = function(args)
             local init_link = require("link.start")(opts)
             link_instances[args.buf] = init_link:lsp_setup()
+            init_link:formatter_setup()
         end,
     })
 
