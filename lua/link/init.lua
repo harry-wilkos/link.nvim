@@ -1,29 +1,14 @@
 -- lua/link/init.lua
 local M = {}
-local link_instances = {}
-
 function M.setup(opts)
-    require("mason").setup({})
-    require("mason-lspconfig").setup({})
-    require("conform").setup({})
-    -- BufReadPost: create & stash instance
-    vim.api.nvim_create_autocmd("BufReadPost", {
-        callback = function(args)
-            local init_link = require("link.start")(opts)
-            link_instances[args.buf] = init_link:lsp_setup()
-            init_link:formatter_setup()
-        end,
-    })
+	require("mason").setup({})
+	require("mason-lspconfig").setup({})
+	require("conform").setup({})
 
-    -- BufUnload: clean up if it exists
-    vim.api.nvim_create_autocmd("LspAttach", {
-        callback = function(args)
-            local inst = link_instances[args.buf]
-            if inst then
-                vim.defer_fn(function() inst:clean() end,1000)
-                link_instances[args.buf] = nil
-            end
-        end,
-    })
+	vim.api.nvim_create_autocmd("BufReadPost", {
+		callback = function()
+			require("link.link_class")(opts)
+		end,
+	})
 end
 return M
