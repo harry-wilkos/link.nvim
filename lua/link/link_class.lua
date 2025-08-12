@@ -3,7 +3,12 @@ local link = util.class()
 
 function link:init(opts)
 	self.file_type = vim.bo.filetype
-	self.opts = vim.tbl_deep_extend("keep", opts, util.default_opts)
+	self.opts = vim.tbl_deep_extend("keep", opts, {
+        clean = true,
+        lsps = {limit = 1},
+        formatters = {limit = 2},
+        linters = {limit = 1}
+    })
 
 	self.mason_registry = require("mason-registry")
 
@@ -106,7 +111,7 @@ function link:find_linters()
 	local result = util.append_unique(file_opts["include"], flatterned_order)
 	for count, linter in ipairs(result) do
 		if count <= opts["limit"] then
-			self.linters[#self.linters + 1] = convert_map[linter]
+			self.linters[#self.linters + 1] = linter
 		else
 			self.remove[#self.remove + 1] = convert_map[linter]
 		end
@@ -280,10 +285,12 @@ function link:install()
 		formatters_by_ft = { [self.file_type] = self.formatters },
 	})
 	require("mason-conform").setup({})
-   
+
+    require("lint").linters_by_ft = {
+        [self.file_type] = self.linters
+    }
     require("mason-nvim-lint").setup({
-        automatic_installation = false,
-        ensure_installed = self.linters
+        automatic_installation = true,
     })
 end
 

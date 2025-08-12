@@ -51,12 +51,5 @@ local function list_to_set(list)
 end
 M.list_to_set = list_to_set
 
-M.default_opts = {
-    clean = true,
-    lsps = {limit = 1},
-    formatters = {limit = 2},
-    linters = {limit = 1}
-}
-
 
 return M
