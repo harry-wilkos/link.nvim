@@ -112,6 +112,8 @@ Per file-type overrides can be used to ignore or include certain clients.
     }
 }
 ```
+###
+An example of the plugins' configuration can be seen in my [dotfiles](https://github.com/harry-wilkos/dotfiles/blob/main/nvim/.config/nvim/lua/plugins/link.lua)
 
 
 
