@@ -17,7 +17,7 @@
 This is a simple plugin aimed at people that can't be bothered finding individual linters, formatters and LSP's for every random file format they come accross. It's not intended to handle custom configuration of tools, but instead install and attatch them with a simple options table. I therefore reccomend setting up tools you daily drive according to plugins like [conform](https://github.com/stevearc/conform.nvim) or [nvim-lint](https://github.com/mfussenegger/nvim-lint) after this plugin, which just handless the installation element.
 
 ## Requirements
-neovim neovim shield.io
+
 + [Mason](https://github.com/mason-org/mason.nvim)
 + [Mason-LSPConfig](https://github.com/mason-org/mason-lspconfig.nvim)
 + [Nvim-LSPConfig](https://github.com/neovim/nvim-lspconfig)
