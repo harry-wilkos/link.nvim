@@ -8,7 +8,7 @@
 
 ###
 
-<h4 align="center">Auto install LSP's Formatters and Linters for Neovim.</h4>
+<h4 align="center">Auto install LSP's Formatters and Linters for Neovim hands free.</h4>
 
 ###
 
@@ -111,6 +111,7 @@ Per file-type overrides can be used to ignore or include certain clients.
     }
 }
 ```
+
 
 
 
