@@ -69,7 +69,7 @@ require("link").setup({})
 ### Default Config
 ```lua
 {
-    clean = true, -- Whether plugins that are no longer required by the plugin
+    clean = true, -- Whether clients that are no longer required by the plugin
                   -- should be automatically uninstalled
 
     lsps = {
@@ -107,7 +107,7 @@ Per file-type overrides can be used to ignore or include certain clients.
         fish = {
             include = {"fish_indent"} -- Although not available on Mason, 
                                       -- will still priorities the externally 
-                                      -- install fish indent formatter
+                                      -- installed fish indent formatter
         }
     }
 }
