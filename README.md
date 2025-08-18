@@ -20,7 +20,7 @@ https://github.com/user-attachments/assets/cc5699b9-e108-41b0-88c4-ee3c25233bf4
 ## Motivation
 
 This is a simple plugin aimed at people that can't be bothered finding individual linters, formatters and LSPs for every random file format they come accross. It's not intended to handle custom configuration of tools, but instead install and attatch them with a simple options table. I therefore reccomend setting up clients you daily drive according to plugins like [conform](https://github.com/stevearc/conform.nvim) or [nvim-lint](https://github.com/mfussenegger/nvim-lint) after this plugin, which just handless the installation element.
-## Requirementstools
+## Requirements
 + Neovim >= 0.11.0
 #### Dependencies:
 + [Mason](https://github.com/mason-org/mason.nvim)
